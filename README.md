@@ -64,15 +64,49 @@ Get a free API key from Google AI Studio. Then, set it as an environment variabl
 export GOOGLE_API_KEY="YOUR_API_KEY_HERE"
 ```
 
-*Step 4: Run the Audit*
+*Step 4: Run the Audit (AI-ENABLED)*
 ---
 Run the script using `sudo -E`, which is crucial for passing your API key to the root environment where the script executes.
 ```
 sudo -E python3 audit.py
 ```
+![](screenshots/four.png)
+
+
 
 ### ⚙️ Command-Line Arguments
 
+- *Help option*
+```
+sudo -E python3 audit.py --help
+```
+
+![](screenshots/four.png)
+
+---
+
+- Without AI scan
+```
+sudo python3 audit.py 
+```
+![](screenshots/five.png)
+
+---
+
+- Saving in json format
+```
+sudo python3 audit.py --output file_name.json
+```
+
+![](screenshots/three.png)
+
+### 🤔 Troubleshooting
+
+- `error` : externally-managed-environment: This means you're trying to pip install outside of a virtual environment.
+Follow Step 1 to create and activate one.
+
+- `AI disabled`: `GOOGLE_API_KEY not set`: This warning means you either forgot to run the export command or you didn't use `sudo -E` when running the script.
+The -E flag is essential to preserve the API key variable for the sudo command.
 
 
 ### 📊 Sample Output (Screenshots)
