@@ -1,4 +1,4 @@
-# 🛡️ Linux Security Audit Tool (CIS-Based)
+#  Linux Security Audit Tool (CIS-Based)
 
 A Python-based, command-line tool for auditing the security configuration of Debian 12 systems. This script automates checks based on the CIS (Center for Internet Security) Debian Linux 12 Benchmark to provide a security score, detailed results, and actionable recommendations for hardening your system.
 
@@ -7,7 +7,7 @@ CIS Benchmarks—detailed configuration guides for securing operating systems, c
 a prioritized set of actions to protect against common cyberattacks. All of their guidance is developed through a global consensus
 process involving subject matter experts, making it a trusted standard for system hardening. 
 ```
-## ✨ Key Features
+##  Key Features
 
 - `CIS Benchmark Alignment` : *Checks are based on high-impact recommendations from the official CIS Debian 12 Benchmark.*
 - `AI-Powered Explanations` : *Uses Google's Gemini API to provide expert explanations for failed checks, explaining the `"why"` behind each recommendation.*
@@ -16,7 +16,7 @@ process involving subject matter experts, making it a trusted standard for syste
 - `Actionable Recommendations` : *For every failed check, the tool provides the exact command or steps needed to fix the issue.*
 - `JSON Reporting` : *Option to export the full audit results to a JSON file for automation, record-keeping, or integration with other tools.*
 
-## 🚀 Getting Started
+##  Getting Started
 
 Follow these instructions to get the audit tool running on your system.
 
@@ -106,7 +106,7 @@ sudo python3 audit.py --output file_name.json
 
 ![](screenshots/three.png)
 
-### 🤔 Troubleshooting
+###  Troubleshooting
 
 - `error` : externally-managed-environment: This means you're trying to pip install outside of a virtual environment.
 Follow Step 1 to create and activate one.
@@ -115,7 +115,7 @@ Follow Step 1 to create and activate one.
 The -E flag is essential to preserve the API key variable for the sudo command.
 
 
-### 📊 Sample Output (Screenshots)
+###  Sample Output (Screenshots)
 
 ---
 ![](screenshots/six.png)
