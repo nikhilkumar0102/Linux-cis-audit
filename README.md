@@ -70,9 +70,15 @@ Run the script using `sudo -E`, which is crucial for passing your API key to the
 ```
 sudo -E python3 audit.py
 ```
-![](screenshots/four.png)
+![](screenshots/nine.png)
 
+---
 
+- *Sample output AI*
+
+![](screenshots/ten.png)
+
+---
 
 ### ⚙️ Command-Line Arguments
 
@@ -110,3 +116,16 @@ The -E flag is essential to preserve the API key variable for the sudo command.
 
 
 ### 📊 Sample Output (Screenshots)
+
+---
+![](screenshots/six.png)
+
+---
+
+![](screenshots/seven.png)
+
+---
+
+![](screenshots/eight.png)
+
+
