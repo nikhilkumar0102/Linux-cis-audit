@@ -2,14 +2,19 @@
 
 A Python-based, command-line tool for auditing the security configuration of Debian 12 systems. This script automates checks based on the CIS (Center for Internet Security) Debian Linux 12 Benchmark to provide a security score, detailed results, and actionable recommendations for hardening your system.
 
+```
+CIS Benchmarks—detailed configuration guides for securing operating systems, cloud services, and software—and the CIS Controls,
+a prioritized set of actions to protect against common cyberattacks. All of their guidance is developed through a global consensus
+process involving subject matter experts, making it a trusted standard for system hardening. 
+```
 ## ✨ Key Features
 
 - `CIS Benchmark Alignment` : *Checks are based on high-impact recommendations from the official CIS Debian 12 Benchmark.*
+- `AI-Powered Explanations` : *Uses Google's Gemini API to provide expert explanations for failed checks, explaining the `"why"` behind each recommendation.*
 - `User-Friendly Output` : *Color-coded, icon-based reports make it easy to see the security posture of your system at a glance.*
+- `Scoring System` : *Quantifies your system's security with a score and a letter grade, helping you track hardening progress.*
 - `Actionable Recommendations` : *For every failed check, the tool provides the exact command or steps needed to fix the issue.*
-- `Scoring System` : *Quantifies your system's security with a score and a letter grade, helping you track hardening progress over time.*
 - `JSON Reporting` : *Option to export the full audit results to a JSON file for automation, record-keeping, or integration with other tools.*
-- `Categorized Results` : *Checks are grouped by category (e.g., File System Security, SSH Security) for better organization.*
 
 ## 🚀 Getting Started
 
@@ -20,47 +25,54 @@ Prerequisites
 - A Debian-based Linux system (tested on Debian 12).
 - Python 3.6 or higher.
 - Root (sudo) privileges to run the script.
+- An active internet connection (for the AI features).
 ```
 
 ## Installation & Usage
 
-- Download the Script: *Save the code provided in our previous conversation as audit.py on your Linux system.*
+- `Download the Script` : *Save the code provided as `audit.py` on your Linux system.*
 
 #### Make it Executable :
 ```
-chmod +x audit.py
+chmod +X audit.py
 ```
 
-Run the Audit:
+*Step 1: Set Up the Environment*
+---
+Because modern Linux distributions protect system Python packages, you must create a virtual environment.
 
-- You must run the script with sudo because it needs to read system-level configuration files.
+```
+# 1. Create a virtual environment
+python3 -m venv venv
 
-- Standard Audit:
-```
-sudo python3 audit.py
-```
-
-- Save Report to JSON:
-```
-sudo python3 audit.py --output security_report.json
+# 2. Activate the environment
+source venv/bin/activate
 ```
 
-- Quiet Mode (Summary and Recommendations Only):
+*Step 2: Install Dependencies*
+---
+With the environment active, install the required library for the AI features.
+
 ```
-sudo python3 audit.py --quiet
+pip install google-generativeai
 ```
+
+*Step 3: Set Your API Key*
+---
+Get a free API key from Google AI Studio. Then, set it as an environment variable in your terminal.
+```
+export GOOGLE_API_KEY="YOUR_API_KEY_HERE"
+```
+
+*Step 4: Run the Audit*
+---
+Run the script using `sudo -E`, which is crucial for passing your API key to the root environment where the script executes.
+```
+sudo -E python3 audit.py
+```
+
+### ⚙️ Command-Line Arguments
+
+
 
 ### 📊 Sample Output (Screenshots)
-
-![one](screenshots/one.png)
-
----
-
-![two](screenshots/two.png)
-
----
-
-![three](screenshots/three.png)
-
----
-
