@@ -52,7 +52,15 @@ sudo python3 audit.py --quiet
 
 ### 📊 Sample Output (Screenshots)
 
+![one](screenshots/one.png)
 
+---
+
+![two](screenshots/two.png)
+
+---
+
+![three](screenshots/three.png)
 
 ---
 
