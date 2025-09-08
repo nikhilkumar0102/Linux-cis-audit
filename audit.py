@@ -435,6 +435,134 @@ def check_system_accounts():
         "Password & Account Policy", "medium"
     )
 
+def check_ufw_default_policy():
+    """
+    CIS 4.2.7 - Verifies that the UFW default incoming policy is 'deny' or 'drop'.
+    This is a critical security measure to ensure traffic is blocked by default.
+    """
+    # --- CORRECTED LOGIC ---
+    # Reading the configuration file is more reliable than parsing status output.
+    ufw_config_file = "/etc/default/ufw"
+    if not os.path.exists(ufw_config_file):
+        audit_results.add_check(
+            "UFW Default Deny Policy", False,
+            "Configuration file '/etc/default/ufw' not found.",
+            "Ensure UFW is installed correctly.", "Firewall Security", "high"
+        )
+        return
+
+    # Grep for the default input policy in the config file.
+    # We accept "DROP" or "REJECT" as secure defaults.
+    command = f"grep -Po '^\\s*DEFAULT_INPUT_POLICY=\\K\"(DROP|REJECT)\"' {ufw_config_file}"
+    policy_output, success = run_command(command)
+
+    is_default_deny = success and policy_output.strip() in ['"DROP"', '"REJECT"']
+
+    if is_default_deny:
+        policy = policy_output.strip().replace('"', '')
+        audit_results.add_check(
+            "UFW Default Deny Policy", True,
+            f"Default incoming policy is correctly set to '{policy}'.",
+            category="Firewall Security"
+        )
+    else:
+        details = "The default policy for incoming traffic is not set to 'DROP' or 'REJECT' in /etc/default/ufw."
+        fix = "Set DEFAULT_INPUT_POLICY=\"DROP\" in /etc/default/ufw and reload the firewall."
+        audit_results.add_check(
+            "UFW Default Deny Policy", False,
+            details, fix, "Firewall Security", "high"
+        )
+
+
+def check_nftables_default_policy():
+    """
+    CIS 4.3.8 - Verifies that nftables base chains have a 'drop' policy.
+    This ensures a "default deny" posture for all traffic.
+    """
+    ruleset, success = run_command("nft list ruleset")
+    if not success:
+        audit_results.add_check("nftables Ruleset", False, "Could not read nftables ruleset.", "Ensure nftables is properly installed.", "Firewall Security", "medium")
+        return
+
+    chains_to_check = ["input", "forward", "output"]
+    failed_chains = []
+
+    for chain in chains_to_check:
+        chain_policy_line = [line for line in ruleset.split('\n') if f'hook {chain}' in line]
+
+        if not chain_policy_line or 'policy drop' not in chain_policy_line[0]:
+            failed_chains.append(chain)
+
+    if not failed_chains:
+        audit_results.add_check(
+            "nftables Default Policy", True,
+            "Default policies for input, forward, and output are correctly set to 'drop'.",
+            category="Firewall Security"
+        )
+    else:
+        details = f"The following chains do not have a default 'drop' policy: {', '.join(failed_chains)}."
+        fix = "Set the default policy to drop for all base chains, e.g., 'nft chain inet filter input { policy drop \\; }'"
+        audit_results.add_check(
+            "nftables Default Policy", False,
+            details, fix, "Firewall Security", "high"
+        )
+
+def check_firewall_status():
+    """
+    CIS 4.1 & deeper - Checks for an active firewall and its core configuration.
+    """
+    firewalls = {
+        "ufw": "Uncomplicated Firewall (UFW)",
+        "nftables": "nftables",
+        "iptables-persistent": "iptables"
+    }
+
+    active_firewalls = []
+
+    # --- Part 1: Check for an active firewall service ---
+    for i, (service, name) in enumerate(firewalls.items(), 1):
+        print_progress_bar(i, len(firewalls), "Firewall Status ")
+
+        is_active = False
+        # UFW is not a standard systemd service, so it needs a special check.
+        if service == "ufw":
+            status_output, success = run_command("ufw status")
+            if success and "Status: active" in status_output:
+                is_active = True
+        else:
+            # Check other firewalls with systemctl
+            status_output, success = run_command(f"systemctl is-active {service}")
+            if success and status_output.strip() == "active":
+                is_active = True
+
+        if is_active:
+            active_firewalls.append(name)
+
+    # --- Part 2: Evaluate findings and run deeper configuration checks ---
+    if len(active_firewalls) == 1:
+        audit_results.add_check(
+            "Host-Based Firewall", True,
+            f"A single, active firewall is running: {active_firewalls[0]}",
+            category="Firewall Security"
+        )
+        # Perform a deeper configuration check based on the active firewall
+        if active_firewalls[0] == "Uncomplicated Firewall (UFW)":
+            check_ufw_default_policy()
+        elif active_firewalls[0] == "nftables":
+            check_nftables_default_policy()
+
+    elif len(active_firewalls) > 1:
+        details = f"Multiple firewalls are active: {', '.join(active_firewalls)}. This can cause conflicts."
+        fix = "Ensure only one firewall service is active. Disable the others, e.g., 'sudo systemctl --now disable nftables'"
+        audit_results.add_check("Host-Based Firewall", False, details, fix, "Firewall Security", "medium")
+    else:
+        audit_results.add_check(
+            "Host-Based Firewall", False,
+            "No active firewall service was found (checked for UFW, nftables, iptables).",
+            "Install and enable a host-based firewall, such as UFW: sudo ufw enable",
+            "Firewall Security", "high"
+        )
+
 # ========================================
 # ENHANCED REPORTING AND OUTPUT
 # ========================================
@@ -667,6 +795,7 @@ def run_security_checks():
         ("SSH Configuration", check_ssh_configuration),
         ("Password Policies", check_password_policies),
         ("System Accounts", check_system_accounts)
+        ("Firewall Status", check_firewall_status)
     ]
     
     print(f"\n{Colors.BOLD}{Colors.WARNING}{Icons.MAGNIFYING_GLASS} STARTING COMPREHENSIVE SECURITY AUDIT{Colors.ENDC}")
@@ -759,3 +888,4 @@ if __name__ == "__main__":
         print(f"\n{Colors.FAIL}{Icons.FAILURE} Unexpected error: {str(e)}{Colors.ENDC}")
         print(f"{Colors.GRAY}Please report this issue to the development team.{Colors.ENDC}")
         sys.exit(1)
+
