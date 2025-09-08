@@ -7,7 +7,6 @@ This script performs comprehensive security audits based on CIS (Center for Inte
 benchmarks. It checks various system configurations including file permissions, SSH settings,
 password policies, and more.
 
-Author: Security Team
 Version: 2.0
 Requirements: Linux OS, Python 3.6+, Root privileges
 Usage: sudo python3 audit.py [--output filename.json] [--quiet]
@@ -511,3 +510,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print(f"\n{Colors.WARNING}Audit interrupted by user. Exiting.{Colors.ENDC}")
         sys.exit(1)
+
