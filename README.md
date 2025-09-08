@@ -76,7 +76,7 @@ sudo -E python3 audit.py
 
 - *Sample output AI*
 
-![](screenshots/ten.png)
+![](screenshots/Output1.png)
 
 ---
 
